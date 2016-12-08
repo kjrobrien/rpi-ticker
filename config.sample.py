@@ -5,9 +5,11 @@ CONFIG = {
 		"OAUTH_TOKEN" : "",
 		"OAUTH_SECRET" : ""
 	},
-	"tickers" : [],
-	"refresh" : 10,
+	"tickerFile" : "tickers.json",
+	"refresh" : 10, # How frequently (seconds) API is called for prices
 	"scrollDelay": 0.02,
 	"fontFile" : "6x9.bdf",
-	"debug" : True
+	"debug" : True,
+	"api" : "TradeKing",
+	"webPort" : 8080
 }

@@ -22,8 +22,10 @@ class RunTicker(SampleBase):
 			offset = 0
 			len = 0
 			for combo in combos:
-				len1 = graphics.DrawText(offscreenCanvas, font, pos + offset, self.matrix.height/2 - 1, combo.color, combo.firstLine)
-				len2 = graphics.DrawText(offscreenCanvas, font, pos + offset, self.matrix.height - 1, combo.color, combo.secondLine)
+				len1 = graphics.DrawText(offscreenCanvas, font, pos + offset,
+					self.matrix.height/2 - 1, combo.color, combo.firstLine)
+				len2 = graphics.DrawText(offscreenCanvas, font, pos + offset,
+					self.matrix.height - 1, combo.color, combo.secondLine)
 				max_length = max(len1, len2)
 				len = len + max_length
 				offset = offset + max_length

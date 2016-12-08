@@ -1,7 +1,7 @@
 from config import *
 import time
 
-class PricesAPI():
+class TickerPricesAPI():
 	def __init__(self, symbols):
 		self.symbols = symbols
 		self.prices = []
@@ -35,3 +35,6 @@ class PricesAPI():
 
 	def latestPrices(self):
 		return self.prices
+
+	def webMessage(self):
+		return ''

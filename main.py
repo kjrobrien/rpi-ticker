@@ -1,27 +1,36 @@
 import matrix
-from tradeking import TradeKing
 import threading
 import sys
+import importlib
 from config import *
 from webserver import webServer
+import pricesapi
+import json
 
 
 
 if __name__ == "__main__":
+	# load tickers
+	with open(CONFIG["tickerFile"]) as tickerFile:
+		try:
+			tickers = json.load(tickerFile)
+		except Exception:
+			tickers = []
+
 	parser = matrix.RunTicker()
 	if (not parser.process()):
 		parser.print_help()
 		sys.exit(1)
-	tk = TradeKing(CONFIG["tickers"])
-	server = webServer(tk)
 
-	apiThread = threading.Thread(target=tk.timedUpdate)
+	api = pricesapi.TradeKing(tickers)
+	server = webServer(api)
+
+	apiThread = threading.Thread(target=api.timedUpdate)
 	apiThread.daemon = True
-	matrixThread = threading.Thread(target=parser.Run, args=(tk,))
+	matrixThread = threading.Thread(target=parser.Run, args=(api,))
 	matrixThread.daemon = True
 	webThread = threading.Thread(target=server.run)
 	webThread.daemon = True
-
 
 	try:
 		# Start loop
@@ -32,7 +41,6 @@ if __name__ == "__main__":
 		apiThread.join()
 		matrixThread.join()
 		webThread.join()
-
 
 	except KeyboardInterrupt:
 		print("Exiting\n")
