@@ -19,14 +19,17 @@ class TradeKing(TickerPricesAPI):
 		r = Session()
 		r.auth = OAuth1(c["CONSUMER_KEY"], c["CONSUMER_SECRET"],
 				c["OAUTH_TOKEN"], c["OAUTH_SECRET"])
-		r = r.get(self.url, params=params)
+		try:
+			r = r.get(self.url, params=params)
+		except Exception:
+			return False
 		if CONFIG["debug"]:
 			print(self.symbols)
 			print(params)
 			#print(r.json())
 		try:
 			prices = r.json()["response"]["quotes"]["quote"]
-		except ValueError:
+		except KeyError:
 			return
 		if len(self.symbols) == 1:
 			prices = [prices]
@@ -47,6 +50,7 @@ class TradeKing(TickerPricesAPI):
 
 			price_obj = Price(ticker, last_price, sign, movement, percent)
 			self.updatePrice(price_obj)
+		return True
 	def webMessage(self):
-		return 'Uses TradeKing for quotes. You can confirm the proper tickers at \
-		<a href="https://research.tradeking.com/research/markets/index.asp">their website</a>.'
+		return 'Uses TradeKing for quotes. You can confirm the proper tickers at ' \
+		'<a href="https://research.tradeking.com/research/markets/index.asp">their website</a>.'

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, Markup
 from config import *
 import json
+import os
 
 class webServer():
 	def __init__(self, api):
@@ -20,8 +21,12 @@ class webServer():
 				updated = True
 				tickers = request.form['tickers'].upper()
 				self.api.symbols = tickers.split(',')
+				self.api.update()
 				with open(CONFIG["tickerFile"], 'w') as tickerFile:
 					json.dump(self.api.symbols, tickerFile)
 			tickers = ','.join(self.api.symbols)
 			apimsg = Markup(self.api.webMessage())
 			return render_template('index.html', tickers=tickers, updated=updated, apimsg=apimsg)
+		@self.app.route("/kill")
+		def kill():
+			os._exit(0)
