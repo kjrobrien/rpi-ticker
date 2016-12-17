@@ -2,7 +2,9 @@
 
 # Don't include our config file
 config.py
+
 # Don't include tickers file
+tickers.json
 
 
 # Byte-compiled / optimized / DLL files
