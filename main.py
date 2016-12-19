@@ -1,9 +1,8 @@
 import os, sys, json, threading, time
 from config import *
-import matrix, webserver, pricesapi
+import matrix, webserver, pricesapi, marketclose
 
-if __name__ == "__main__":
-
+def readTickers():
 	# load tickers from tickerFile
 	try:
 		# create full path for tickerFile
@@ -16,40 +15,33 @@ if __name__ == "__main__":
 	except FileNotFoundError:
 		# if tickerFile not found, intialize with empty list
 		tickers = []
+	return tickers
 
+if __name__ == "__main__":
+	modules = {} # keep track of api, webserver, matrix
 	# set up api for prices, make sure it has updated before continuing
-	api = pricesapi.TradeKing(tickers)
-	api.update()
-	while not api.hasUpdated:
-		time.sleep(2) # wait 2 seconds before trying to update again
-		api.update()
-
-	# set up the thread for updating prices
-	apiThread = threading.Thread(target=api.timedUpdate)
-	apiThread.daemon = True
-
-	# set up the webserver for changing the tickers and create thread
-	server = webserver.webServer(api)
-	webThread = threading.Thread(target=server.run)
-	webThread.daemon = True
-
-	# set up the led matrix and its thread
-	ledMatrix = matrix.RunTicker()
+	api = pricesapi.TradeKing(readTickers(), modules)
+	api.initUpdate()
+	server = webserver.webServer(modules)
+	ledMatrix = matrix.RunTicker(modules)
 	# proper terminal parameters not given
 	if (not ledMatrix.process()):
 		ledMatrix.print_help()
 		sys.exit(1)
-	matrixThread = threading.Thread(target=ledMatrix.Run, args=(api,))
-	matrixThread.daemon = True
+
+	modules.update({"api" : api, "webserver" : server, "matrix" : ledMatrix})
+
 
 	try:
-		# start all threads
-		apiThread.start()
-		matrixThread.start()
-		webThread.start()
-		apiThread.join()
-		matrixThread.join()
-		webThread.join()
+		threads = {}
+		for key, value in modules.items():
+			threads[key] = threading.Thread(target=value.run)
+			threads[key].daemon = True
+		for key, value in threads.items():
+			threads[key].start()
+		for key, value in threads.items():
+			threads[key].join()
+
 	# Handle exiting the program
 	except (KeyboardInterrupt, SystemExit):
 		print("Exiting\n")

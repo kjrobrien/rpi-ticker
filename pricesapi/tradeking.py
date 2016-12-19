@@ -7,11 +7,12 @@ from .tickerpricesapi import TickerPricesAPI
 
 class TradeKing(TickerPricesAPI):
 
-	def __init__(self, symbols):
-		super(TradeKing, self).__init__(symbols)
+	def __init__(self, symbols, modules):
+		super(TradeKing, self).__init__(symbols, modules)
 		self.url = "https://api.tradeking.com/v1/market/ext/quotes.json"
 
 	def updatePrices(self):
+		print("Beginning price update")
 		if len(self.symbols) < 1:
 			return
 		params = dict(symbols=','.join(self.symbols))
@@ -29,8 +30,8 @@ class TradeKing(TickerPricesAPI):
 			#print(r.json())
 		try:
 			prices = r.json()["response"]["quotes"]["quote"]
-		except KeyError:
-			return
+		except Exception:
+			return False
 		if len(self.symbols) == 1:
 			prices = [prices]
 

@@ -4,9 +4,9 @@ import json
 import os
 
 class webServer():
-	def __init__(self, api):
+	def __init__(self, modules):
 		self.app = Flask(__name__)
-		self.api = api
+		self.modules = modules
 		self.setup()
 
 	def run(self):
@@ -20,12 +20,12 @@ class webServer():
 			if request.method == 'POST':
 				updated = True
 				tickers = request.form['tickers'].upper()
-				self.api.symbols = tickers.split(',')
-				self.api.update()
+				self.modules["api"].symbols = tickers.split(',')
+				self.modules["api"].update()
 				with open(CONFIG["tickerFile"], 'w') as tickerFile:
-					json.dump(self.api.symbols, tickerFile)
-			tickers = ','.join(self.api.symbols)
-			apimsg = Markup(self.api.webMessage())
+					json.dump(self.modules["api"].symbols, tickerFile)
+			tickers = ','.join(self.modules["api"].symbols)
+			apimsg = Markup(self.modules["api"].webMessage())
 			return render_template('index.html', tickers=tickers, updated=updated, apimsg=apimsg)
 		@self.app.route("/kill")
 		def kill():
