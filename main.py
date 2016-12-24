@@ -1,6 +1,6 @@
 import os, sys, json, threading, time, multiprocessing
 from config import *
-import matrix, webserver, pricesapi, marketclose
+import matrix, webserver, pricesapi
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
