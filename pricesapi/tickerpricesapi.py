@@ -6,8 +6,9 @@ class TickerPricesAPI():
 		self.symbols = symbols
 		self.prices = collections.OrderedDict() # The latest prices
 		self.pricesUpdating = collections.OrderedDict() # List for prices while updating
-		self.hasUpdated = False # whether the prices have ever been updated
 		self.modules = modules
+		self.hasUpdated = False # whether the prices have ever been updated
+		self.tickersChanged = False # True when webserver changes tickers
 
 	# to be defined in a child class
 	def updatePrices(self):
@@ -25,7 +26,6 @@ class TickerPricesAPI():
 
 	# add the given price object (price) to our list of pricesUpdating
 	def updatePrice(self, price):
-		#print("We aren't updating for some reason")
 		self.pricesUpdating[price.ticker] = price
 
 	# updates all prices of given list symbols
@@ -41,9 +41,10 @@ class TickerPricesAPI():
 
 	# Updates prices every CONFIG["refresh"] seconds
 	def timedUpdate(self):
-		while True:
-			self.update()
-			time.sleep(CONFIG["refresh"])
+		while self.modules["keepRunning"]:
+			if self.modules["pwrSwitch"]:
+				self.update()
+				time.sleep(CONFIG["refresh"])
 
 	# the latest up to date prices
 	def latestPrices(self):

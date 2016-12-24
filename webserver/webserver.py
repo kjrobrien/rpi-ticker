@@ -22,6 +22,7 @@ class webServer():
 				tickers = request.form['tickers'].upper()
 				self.modules["api"].symbols = tickers.split(',')
 				self.modules["api"].update()
+				self.modules["api"].tickersChanged = True
 				with open(CONFIG["tickerFile"], 'w') as tickerFile:
 					json.dump(self.modules["api"].symbols, tickerFile)
 			tickers = ','.join(self.modules["api"].symbols)

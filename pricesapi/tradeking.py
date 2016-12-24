@@ -12,7 +12,6 @@ class TradeKing(TickerPricesAPI):
 		self.url = "https://api.tradeking.com/v1/market/ext/quotes.json"
 
 	def updatePrices(self):
-		print("Beginning price update")
 		if len(self.symbols) < 1:
 			return
 		params = dict(symbols=','.join(self.symbols))
@@ -27,7 +26,6 @@ class TradeKing(TickerPricesAPI):
 		if CONFIG["debug"]:
 			print(self.symbols)
 			print(params)
-			#print(r.json())
 		try:
 			prices = r.json()["response"]["quotes"]["quote"]
 		except Exception:
