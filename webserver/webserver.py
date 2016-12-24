@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, Markup
 from config import *
-import json
-import os
+import json, os, sys
 
 class webServer():
 	def __init__(self, modules):
@@ -23,8 +22,9 @@ class webServer():
 				self.modules["api"].symbols = tickers.split(',')
 				self.modules["api"].update()
 				self.modules["api"].tickersChanged = True
-				with open(CONFIG["tickerFile"], 'w') as tickerFile:
-					json.dump(self.modules["api"].symbols, tickerFile)
+				tickerFile = os.path.join(sys.path[0], CONFIG["tickerFile"])
+				with open(tickerFile, 'w') as file:
+					json.dump(self.modules["api"].symbols, file)
 			tickers = ','.join(self.modules["api"].symbols)
 			apimsg = Markup(self.modules["api"].webMessage())
 			return render_template('index.html', tickers=tickers, updated=updated, apimsg=apimsg)
